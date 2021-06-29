@@ -4,6 +4,7 @@
 
 #include "kernels.h"
 #include "kernels_absl.h"
+#include "kernels_ska.h"
 int main() {
 
 //init
@@ -14,6 +15,10 @@ int main() {
 	paddle::framework::InitAllOpKernels_Absl();
 	auto& b = paddle::framework::AllOpKernels_Absl();
 	std::cout << b.size() <<std::endl;
+
+	paddle::framework::InitAllOpKernels_Ska();
+	auto& c = paddle::framework::AllOpKernels_Ska();
+	std::cout << c.size() << std::endl;
 
 
 	InitKeys();
@@ -38,11 +43,23 @@ int main() {
 	}
 	auto t3 = std::chrono::system_clock::now();
 
+	for(int i = 0; i < N; ++i) {
+		std::string& key = g_all_keys[i%g_all_keys.size()];
+		auto value = c.find(key);
+		assert (value != c.end());
+	}
+	auto t4 = std::chrono::system_clock::now();
+
+
+
+
 
 	auto d1 = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1);
 	auto d2 = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2);
+	auto d3 = std::chrono::duration_cast<std::chrono::microseconds>(t4 - t3);
 	std::cout << d1.count() << " microsecondes" << std::endl;
 	std::cout << d2.count() << " microsecondes" << std::endl;
+	std::cout << d3.count() << " microsecondes" << std::endl;
 
 
 }
